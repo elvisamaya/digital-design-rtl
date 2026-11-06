@@ -9,9 +9,10 @@ IVERILOG := iverilog -g2012 -Wall -Wno-timescale
 VVP      := vvp -n
 BUILD    := build
 
-TESTS := debouncer
+TESTS := debouncer sync_fifo
 
 RTL_debouncer     := rtl/debouncer.v
+RTL_sync_fifo     := rtl/sync_fifo.v
 
 .PHONY: all test clean $(TESTS)
 
