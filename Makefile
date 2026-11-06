@@ -1,8 +1,10 @@
 # Simulation flow: Icarus Verilog (iverilog + vvp), waveforms in GTKWave.
 #
 #   make            run every testbench
-#   make <name>       run one testbench (any name listed in TESTS)
-#   make wave-<name>  open that testbench's waveform in GTKWave
+#   make uart       run one testbench (debouncer, sync_fifo, uart, spi_master,
+#                   traffic_light, uart_echo_top)
+#   make wave-uart  open the waveform of one testbench in GTKWave
+#   make lint       Verilator lint on all RTL (if installed)
 #   make clean
 
 IVERILOG := iverilog -g2012 -Wall -Wno-timescale
@@ -18,7 +20,7 @@ RTL_spi_master    := rtl/spi_master.v
 RTL_traffic_light := rtl/traffic_light.v
 RTL_uart_echo_top := rtl/uart_tx.v rtl/uart_rx.v rtl/sync_fifo.v rtl/uart_echo_top.v
 
-.PHONY: all test clean $(TESTS)
+.PHONY: all test lint clean $(TESTS)
 
 all: test
 
@@ -37,6 +39,12 @@ $(TESTS): %: | $(BUILD)
 
 wave-%:
 	gtkwave $(BUILD)/tb_$*.vcd &
+
+lint:
+	verilator --lint-only -Wall rtl/*.v --top-module uart_echo_top
+	verilator --lint-only -Wall rtl/debouncer.v
+	verilator --lint-only -Wall rtl/spi_master.v
+	verilator --lint-only -Wall rtl/traffic_light.v
 
 clean:
 	rm -rf $(BUILD)
